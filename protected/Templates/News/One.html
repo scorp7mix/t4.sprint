@@ -1,0 +1,17 @@
+{% extends 'Index.html' %}
+
+{% block content %}
+
+    {% if not article %}
+        <p class="alert alert-info">Article not found</p>
+    {% else %}
+        <h1>{{ article.title }}</h1>
+        <div class="clearfix">
+            <img src="{{ article.image }}" class="pull-left" style="margin: 0 15px 15px 0" />
+            <p>{{ article.text }}</p>
+        </div>
+    {% endif %}
+
+    <a href="/news/">Back to news</a>
+
+{% endblock %}

@@ -1,0 +1,11 @@
+{% if null != article %}
+<h3>Latest article:</h3>
+
+<div class="panel panel-default">
+    <div class="panel-heading"><a href="/news/{{ article.id }}.html">{{ article.title }}</a></div>
+    <div class="panel-body">
+        <img src="{{ article.image }}" class="pull-left" style="margin: 0 15px 15px 0" />
+        <p>{{ article.text }}</p>
+    </div>
+</div>
+{% endif %}
