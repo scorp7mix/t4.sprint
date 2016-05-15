@@ -2,90 +2,56 @@
 
 namespace App\Models;
 
-use T4\Core\Config;
+use T4\Core\Exception;
+use T4\Fs\Helpers;
+use T4\Http\Uploader;
+use T4\Orm\Model;
 
 /**
  * Class News
  * @package App\Models
+ *
+ * @property string $title
+ * @property string $text
+ * @property string $published
+ * @property string $image
  */
 class News
-    extends Config
+    extends Model
 {
-    const PATH = ROOT_PATH_PROTECTED . '/Data/news.php';
+    protected static $schema = [
+        'table'   => 'news',
+        'columns' => [
+            'title'     => ['type' => 'string'],
+            'text'      => ['type' => 'string'],
+            'published' => ['type' => 'datetime'],
+            'image'     => ['type' => 'string'],
+        ],
+    ];
 
     /**
-     * @return array
+     * @param string $field
+     * @throws Exception
      */
-    public static function findAll()
+    public function addImage(string $field)
     {
-        return (new self(self::PATH))->sort(true)->toArray();
-    }
+        $uploader = new Uploader($field);
+        $uploader->setPath('/tmp');
 
-    /**
-     * @param int $id
-     * @return Article|null
-     */
-    public static function findOne(int $id)
-    {
-        $news = new self(self::PATH);
+        $source = $uploader();
+        if (false === $source) {
+            throw new Exception('Error while loading file');
+        }
+
+        $sourcePath = ROOT_PATH_PUBLIC . $source;
+        $extension = '.' . pathinfo($sourcePath, PATHINFO_EXTENSION);
+        $destPath = ROOT_PATH_PUBLIC . '/images/news/' . $this->getPk() . $extension;
+        Helpers::copyFile($sourcePath, $destPath);
+
+        $this->image = '/images/news/' . $this->getPk() . $extension;
+        $this->save();
         
-        foreach ($news as $data) {
-            if ($data->id === $id) {
-                $article = new Article($data->toArray());
-                break;
-            }
-        }
-
-        return $article ?? null;
+        Helpers::removeFile($sourcePath);
     }
 
-    protected function sort($reverse = false)
-    {
-        $news = $this->toArray();
-
-        usort($news, function ($a1, $a2) use ($reverse) {
-            if (true === $reverse) {
-                return $a2['id'] <=> $a1['id'];
-            } else {
-                return $a1['id'] <=> $a2['id'];
-            }
-        });
-
-        $this->__data = [];
-        $this->fromArray($news);
-        return $this;
-    }
-
-    /**
-     * @return Article|null
-     */
-    public static function findLast()
-    {
-        $news = (new self(self::PATH))->sort(true);
-
-        if ($news->count() > 0) {
-            $last = new Article($news[0]->toArray());
-        }
-
-        return $last ?? null;
-    }
-
-    /**
-     * @param Article $article
-     */
-    public static function addArticle(Article $article)
-    {
-        $news = (new self(self::PATH))->sort(true);
-
-        $lastId = 0;
-        if ($news->count() > 0) {
-            $lastId = $news[0]->id;
-        }
-        
-        $article->id = ++$lastId;
-        $article->addImage('image');
-
-        $news->append($article->toArray());
-        $news->save();
-    }
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app.config.app_title }}</title>
+
+    {{ publishCss() }}
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Panel - {% block page_title %}Homepage{% endblock %}</h1>
+        <hr>
+
+        {% if app.flash.error is defined %}<p class="alert alert-danger">{{ app.flash.error }}</p>{% endif %}
+        {% if app.flash.message is defined %}<p class="alert alert-success">{{ app.flash.message }}</p>{% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    {{ publishJs() }}
+</body>
+</html>

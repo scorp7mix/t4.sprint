@@ -3,8 +3,6 @@
 namespace App\Controllers;
 
 
-use App\Models\Article;
-use T4\Core\Exception;
 use T4\Mvc\Controller;
 
 class News
@@ -12,32 +10,20 @@ class News
 {
     public function actionDefault()
     {
-        $this->data->news = \App\Models\News::findAll();
+        $this->data->news = \App\Models\News::findAll([
+            'order' => 'published DESC'
+        ]);
     }
 
     public function actionOne($id)
     {
-        $this->data->article = \App\Models\News::findOne((int)$id);
+        $this->data->article = \App\Models\News::findByPK($id);
     }
 
     public function actionLast()
     {
-        $this->data->article = \App\Models\News::findLast();
-    }
-
-    public function actionForm()
-    {
-
-    }
-
-    public function actionAdd(Article $data)
-    {
-        try {
-            \App\Models\News::addArticle($data);
-        } catch (Exception $e) {
-            $this->app->flash->error = $e->getMessage();
-        }
-
-        $this->redirect('/news');
+        $this->data->article = \App\Models\News::find([
+            'order' => 'published DESC',
+        ]);
     }
 }
