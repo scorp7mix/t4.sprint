@@ -4,6 +4,7 @@ namespace App\Modules\Admin\Controllers;
 
 use T4\Core\Exception;
 use T4\Core\MultiException;
+use T4\Fs\Helpers;
 use T4\Mvc\Controller;
 
 class News
@@ -70,6 +71,7 @@ class News
                 $this->redirect('/admin/news');
             } else {
                 $item->delete();
+                Helpers::removeFile(ROOT_PATH_PUBLIC . $item->image);
                 $this->app->flash->message = 'Article #' . $id . ' successfully deleted';
             }
         } else {
