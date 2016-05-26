@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use T4\Core\Exception;
 use T4\Dbal\QueryBuilder;
 use T4\Orm\Model;
 
@@ -42,5 +43,25 @@ class Category
                 ':rgt' => $this->__rgt,
             ])
         );
+    }
+
+    protected function validateTitle($value)
+    {
+        if ('' === trim($value)) {
+            throw new Exception('Title not valid');
+        }
+        return true;
+    }
+
+    protected function sanitizeTitle($value)
+    {
+        return trim($value);
+    }
+
+    protected function afterDelete()
+    {
+        foreach ($this->products as $product) {
+            $product->delete();
+        }
     }
 }

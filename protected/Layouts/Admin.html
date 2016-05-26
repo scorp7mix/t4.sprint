@@ -11,8 +11,8 @@
         <h1>Admin Panel - {% block page_title %}Homepage{% endblock %}</h1>
         <hr>
 
-        {% if app.flash.error is defined %}<p class="alert alert-danger">{{ app.flash.error }}</p>{% endif %}
-        {% if app.flash.message is defined %}<p class="alert alert-success">{{ app.flash.message }}</p>{% endif %}
+        {% if app.flash.error is defined %}<p class="alert alert-danger">{{ app.flash.error | raw }}</p>{% endif %}
+        {% if app.flash.message is defined %}<p class="alert alert-success">{{ app.flash.message | raw }}</p>{% endif %}
 
         {% block content %}{% endblock %}
     </div>

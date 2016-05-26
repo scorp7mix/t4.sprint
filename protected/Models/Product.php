@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use T4\Core\Exception;
 use T4\Orm\Model;
 
 /**
@@ -25,4 +26,30 @@ class Product
             'category' => ['type' => self::BELONGS_TO, 'model' => Category::class]
         ],
     ];
+
+    protected function validateTitle($value)
+    {
+        if ('' === trim($value)) {
+            throw new Exception('Title not valid');
+        }
+        return true;
+    }
+    
+    protected function validatePrice($value)
+    {
+        if (false === filter_var($value, FILTER_VALIDATE_FLOAT)) {
+            throw new Exception('Price not valid');
+        }
+        return true;
+    }
+
+    protected function sanitizeTitle($value)
+    {
+        return trim($value);
+    }
+
+    protected function sanitizePrice($value)
+    {
+        return (float)$value;
+    }
 }
